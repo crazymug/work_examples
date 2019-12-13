@@ -1,0 +1,18 @@
+{% extends "search.html" %}
+
+{% block body %}
+    
+<table class="fullname_label"><tr><th><span class="title"><h3 class="title">Лог активностей за неделю</h3></span></th></tr></table>
+<div class="result_list">
+    {% for activity in activities %}
+    <br>
+            <b>{{ activity['id'] }}</b>
+	    <b>Краткое описание задачи:</b> {{ activity['descr'] }} <br>
+	    <b>Заказчик:</b> {{ activity['company'] }}<br>
+	    <b>Договор:</b> {{ activity['sla'] }}<br>
+	    <b>ФИО инженера:</b> {{activity['eng']}}<br><br>
+	    <hr>
+   {% endfor %}
+</div> 
+{% endblock %}
+

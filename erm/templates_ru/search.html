@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Трекер задач</title>
+    {% block head %}
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Roboto" 
+          rel="stylesheet">
+    <link rel="stylesheet" href="{{url_for('static', filename='fontawesome-free-5.12.0-web/css/all.css')}}" >
+    <link rel="stylesheet" type="text/css" 
+          href= "{{url_for('static', filename='search.css')}}">
+    {% endblock %}
+</head>
+<body style="margin: 0px;">
+    <table width="100%" style="margin: 0px; padding-bottom: 10px">
+        <tr>
+	    <th style="background: #B2DFDB; margin: 10px; padding: 7px" align=right>
+		{% for tool in toolset %}
+		    <i class="fas fa-star-of-life"></i> <a href="{{ url_for(tool[1], **tool[2]) }}"> {{tool[0]}}</a>
+		{% endfor %} 
+	    </th>
+        </tr>
+    </table>
+
+    {% if startpage == True %} <div style="margin-top: 15%"> {% endif %}	
+	<div align=center>
+
+	   <table width="75%">
+	       <tr>
+		   <th width="25%"></th>
+		   <th width="25%">
+                        <a href="{{url_for('search')}}">
+                              <img src="{{url_for('static', filename = "logostep.png")}}" 
+                                   width=50% style="border: 0;">
+                        </a>
+                   </th>
+		   <th width="25%" align="right"></th>
+	       </tr>
+	       <tr>
+		       <td></td>
+		       <td></td>
+		       <td align="right">
+		       
+		       </td>
+	       </tr>
+	   </table>
+	</div>
+	<div align=center><br><span class="title"><h3>Поиск инженеров</h3></span></div>
+	<div><form class="search" action="/search_result" method=post>
+		<table style="margin:auto;width:70%">
+		    <tr>
+			<td><input type="text" placeholder="Введите необходимые навыки, опыт, название подразделения или ФИО инженера..." name="search_string"></td>
+			<td><button type="submit"><i class="fa fa-search"></i></button></td>
+		    </tr>
+		</table>
+	    </form></div>
+
+	    {% if startpage == True %} </div> {% endif %}
+    <div>	
+    {% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+	<ul class="flashed">
+	{% for category, message in messages %}
+	<li class="{{category}}">{{message}}</li>
+	{% endfor %}
+	</ul>
+	{% endif %}
+	{% endwith %}
+    </div>
+{% block body %}
+{% endblock %}
+</body>
+</html>

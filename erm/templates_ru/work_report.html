@@ -1,0 +1,114 @@
+{% extends "search.html" %}
+{% block body %}
+
+<table class="fullname_label"><tr><th><span class="title"><h3 class="title">Ежемесячный отчет по трудозатратам (<a href="/book_engineer/{{eng_login}}/0/0">{{username}}</a>, за {{month}}.{{year}})</h3></span></th></tr></table>
+    <div class="result_list">
+	<div style="margin:10px">
+	Задачи прошлого месяца
+	<table class="hist_tasks">
+		<tr>
+			<th class="hist_tasks">ID st-erm</th>
+			<th class="hist_tasks">Заказчик</th>
+			<th class="hist_tasks">Договор</th>
+			<th class="hist_tasks">Краткое описание задачи</th>
+			<th class="hist_tasks">Дата начала задачи</th>
+			<th class="hist_tasks">Дата окончания задачи</th>
+			<th class="hist_tasks">Длительность задачи</th>
+		</tr>
+		{% for task in tasks %}
+                <tr>
+			<td class="hist_tasks">{{task[0]}}</td>
+			<td class="hist_tasks">{{task[10]}}</td>
+			<td class="hist_tasks">{{task[11]}}</td>
+			<td class="hist_tasks">{{task[6]}}</td>
+			<td class="hist_tasks">{{task[8]}}</td>
+			<td class="hist_tasks">{{task[9]}}</td>
+			<td class="hist_tasks">{{task[15]}}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<br>
+
+        Трудозатраты по статьям (необходимо списать <b>не более</b> {{hourslimit}} ч.)
+	<form onsubmit="return checkOverallUtil(this);" action="" method="post">
+	<table class="report">
+		<tr>
+			<td class="report">Заказчик/проект</td>
+			<td class="report">Договор</td>
+			<td class="report">Трудозатраты в часах</td>
+			
+		</tr>
+	{% if report %}
+	{% for item in report %}
+		<tr>
+			<td class="report_{{item[3]}}"><input name="item_{{item[0]}}_{{item[2]}}" type="text" value="{{item[0]}}" readonly></td>
+			<td class="report_{{item[3]}}"><input name="sla_{{item[0]}}_{{item[2]}}" type="text" value="{{item[2]}}" readonly></td>
+			<td class="report_{{item[3]}}">
+				<input name="utilHours_{{item[0]}}_{{item[2]}}" type="number" class="utilHoursEditable" value={{item[1]}}>
+				</td>
+			
+		</tr>
+	{% endfor %}
+	{% endif %}
+	{% if premade%}
+	{% for item in premade %}
+	        <tr>
+			<td class="report"><input class="item" name="item_{{item}}" type="text" value="{{item}}" readonly></td>
+			
+			<td class="report"><input class="sla" name="sla_{{item}}" type="text" value="-" readonly></td>
+			<td class="report"> 
+				<input name="utilHours_{{item}} "type="number" class="utilHoursEditable" value=0>
+			</td>
+		</tr>
+        {% endfor %}
+	{% endif %}
+	<tr>
+		<td>ИТОГО</td>
+		<td id="overallUtilHours"></td>
+		<td>ч.</td>
+	</tr>
+	</table>
+	<button type="submit" class="add"><i class="fas fa-save"></i></button>
+	</form>
+	</div>
+    </div>
+
+
+<script type="text/javascript">
+
+	
+var utilHoursEditable = document.getElementsByClassName("utilHoursEditable");
+
+function recalcOverallUtil(item){
+	overallUtil = document.getElementById("overallUtilHours");
+        overallUtil_num = 0;
+	[].forEach.call(utilHoursEditable, function(utilItem) {
+		if (utilItem.value != ""){        
+		overallUtil_num = overallUtil_num + parseInt(utilItem.value);
+		};
+
+	});
+        
+	overallUtil.textContent = overallUtil_num;
+};
+
+window.onload = recalcOverallUtil;
+
+[].forEach.call(utilHoursEditable, function(utilItem) {
+	utilItem.addEventListener("input", recalcOverallUtil)});
+</script>
+
+<script type="text/javascript">
+	var checkOverallUtil = function (formElement){
+		var overallUtilHours = document.getElementById("overallUtilHours");
+                if (parseInt(overallUtilHours.textContent) > {{hourslimit}} ){
+			alert("Сумма трудозатрат больше {{hourslimit}} ч")
+			
+			return false;
+		}
+		else {
+			return true;
+		};
+	};
+</script>
+{% endblock %}

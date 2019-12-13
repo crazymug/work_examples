@@ -1,0 +1,17 @@
+__pycache__/
+erm.cfg
+docker.sh
+erss.db
+modules/__pycache__/
+suir.cfg
+suir.tar
+bin/
+lib/
+lib64
+pyvenv.cfg
+share/
+eng_list.xlsx
+erss
+run_local_dev_env.sh
+run_local_dev_env2.sh
+words_stat.py

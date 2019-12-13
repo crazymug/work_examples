@@ -1,0 +1,242 @@
+{% extends "search.html" %}
+
+
+{% block body %}   
+<script src="{{url_for('static', filename='moment-with-locales.min.js')}}"></script>
+<script src="{{url_for('static', filename='vis.min.js')}}"></script>
+<link href="{{url_for('static', filename='vis.min.css')}}" rel="stylesheet" type="text/css" />
+    <table class="fullname_label" ><tr><th><span class="title"><h3 class="title"> {{ flname }} 
+			{% if act_or_hist == 'act' %}
+			   активные задачи на неделю (7 дней) 
+			{% else %}
+			    исторические данные по задачам ({%if start and start != '0' %}{{start}}{%endif%} : {%if end and end != '0'%}{{end}}{%endif%}) 
+			{% endif %}
+		    </h3></span></th></tr></table>
+<div class="result_list">
+	<span class="title"><h3>Временная шкала задач</h3></span>
+	<table class="booking">
+		<tr><th>Дата начала</th><th><input type="date" name="diag_start_datetime" id="diag_start_datetime"></th></tr>
+		<tr><th>Дата окончания</th><th><input type="date" name="diag_end_datetime" id="diag_end_datetime"></th></tr>
+	</table>
+	<input name="res_login" value="{{ res_login }}" type=hidden>
+	<button type="submit" class="book" id="interval_button"><i class="far fa-check-circle"></i></button>
+	<br>
+	<input id="diag_timeline_radio" type="radio" name="timeline" value="diagram" checked>Диаграмма</input>
+	<input id="table_timeline_radio" type="radio" name="timeline" value="table">Таблица</input>
+
+
+{% if bkinfo %}
+<div id="timeline_visjs" style="margin:30px;"></div>
+<table id="table_timeline" class="hist_tasks" style="visibility:collapse;">
+		<tr>
+			<th class="hist_tasks">ID st-erm</th>
+			<th class="hist_tasks">Заказчик</th>
+			<th class="hist_tasks">Договор</th>
+			<th class="hist_tasks">Краткое описание задачи</th>
+			<th class="hist_tasks">Дата начала задачи</th>
+			<th class="hist_tasks">Дата окончания задачи</th>
+		</tr>
+		{% for booking in bkinfo %}
+                <tr>
+			<td class="hist_tasks">{{booking[0]}}</td>
+			<td class="hist_tasks">{{booking[10]}}</td>
+			<td class="hist_tasks">{{booking[11]}}</td>
+			<td class="hist_tasks">{{booking[6]}}</td>
+			<td class="hist_tasks">{{booking[8]}}</td>
+			<td class="hist_tasks">{{booking[9]}}</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+{% else %}
+нет данных
+{% endif %}
+
+
+<script type="text/javascript">
+</script>
+
+
+
+<input id="res_login" type=hidden>
+
+<script type="text/javascript">
+function addDays(date, days) {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+var container = document.getElementById('timeline_visjs');
+var items = new vis.DataSet([
+  {% for booking in bkinfo %}
+  {
+    start: new Date('{{ booking[8] }}'), 
+    end: new Date('{{ booking[9] }}'),
+    content: '{{ booking[6] }}',
+    title:  '{{ booking[0] }} {{booking[10]}} {{booking[11]}}   {{ booking[6] }}'
+  },
+  {% endfor %}
+]);
+var options = {
+  editable: {remove: true,},
+{% if diag_start_datetime %}
+        start: new Date("{{diag_start_datetime}}"),
+{% endif %}
+
+{% if diag_end_datetime %}
+        end: new Date("{{diag_end_datetime}}"),
+{% endif %}
+
+  selectable: true,
+  locale: 'ru'
+};
+
+window.timeline = new vis.Timeline(container, items, options);
+
+var diag_timeline_radio = document.getElementById("diag_timeline_radio");
+var table_timeline_radio = document.getElementById("table_timeline_radio");
+
+var table_timeline = document.getElementById("table_timeline");
+
+
+function modifyTimeline(){
+    if (diag_timeline_radio.checked == true){
+	window.timeline = new vis.Timeline(container, items, options);
+	table_timeline.style.visibility = "collapse";
+    };
+    if (table_timeline_radio.checked == true){
+	table_timeline.style.visibility = "visible";
+	window.timeline.destroy();
+    };
+};
+
+diag_timeline_radio.addEventListener("change", modifyTimeline);
+table_timeline_radio.addEventListener("change", modifyTimeline);
+
+</script>
+
+</div>
+
+<div class="result_list">
+
+	<form action="book_engineer" method="post" onsubmit="return validateBookForm();">
+		<div style="margin:10px"><span class="title"><h3>Поставить задачу инженеру</h3></span>
+	<table class="booking">
+	<tr><th>Проект/активность</th><th><input type="text" name="proj_id" required size="70"></th></tr>
+	<tr><th>Компания</th><th><input type="text" name="company" required size="30"></th></tr>
+	<tr><th>Договор</th><th><input type="text" name="sla" required size="30"></th></tr>
+	<tr><th>Тип задачи</th><th><form name="book_type">
+		    <input type="radio" name="type" id="hours_radio" value="hours" checked>конкретные часы
+		<input type="radio" name="type" id="perc_radio" value="percent" name="radio_perc">процент от рабочего времени</form><br></th></tr>
+	<tr id="perc_hours" style="visibility: hidden;"><th>Проценты</th><th><input type="number" id="perc" min=0 name="perchours"></th></tr>
+	<tr><th>Повторяемость события</th><th>
+		<input id = "reap_daily" type="radio" name="repeat" value="daily">ежедневно 
+		<input type="radio" name="repeat" value="weekly">еженедельно 
+		<input type="radio" name="repeat" value="monthly">ежемесячно 
+		<input id = "no_reap" type="radio" name="repeat" value="no" checked>нет 
+	</th></tr>
+	<tr><th>Дата/время начала</th><th><input type="datetime-local" name="start_datetime" id="start_dt" required></th></tr>
+	<tr><th>Дата/время окончания</th><th><input type="datetime-local" name="end_datetime" id="end_dt" required></th></tr>
+	</table><br>
+	</div>
+	<input name="res_login" value="{{ res_login }}" type=hidden>
+	<button type="submit" class="book"><i class="far fa-calendar-plus"></i></button>
+	</form>
+
+<script type="text/javascript">
+
+var hours_radio = document.getElementById("hours_radio");
+var perc_radio = document.getElementById("perc_radio");
+var pers_hours =  document.getElementById("perc_hours");
+var start_dt = document.getElementById("start_dt");
+var end_dt = document.getElementById("end_dt");
+var perc_input = document.getElementById("perc");
+var reap_daily_radio = document.getElementById("reap_daily");
+var no_reap_radio = document.getElementById("no_reap");
+var start_view_dt = document.getElementById("diag_start_datetime");
+var end_view_dt  = document.getElementById("diag_end_datetime");
+console.log(start_view_dt.value)
+
+function validateViewBookingForm()
+{
+start_view_date = new Date(start_view_dt.value)
+end_view_date = new Date(end_view_dt.value)
+
+if(start_view_date > end_view_date)
+  { 
+    alert("Введенная дата окончания наступает раньше даты начала");
+    event.preventDefault(); 
+	  return false;
+  }
+  return true;
+}
+
+function redirectToBooking()
+{
+validResult = validateViewBookingForm(); 
+console.log(validResult)
+if(validResult == true)
+    {
+      if (start_view_dt.value == "")
+        {
+            start = "0";
+        } else {
+            start = start_view_dt.value;
+        }
+
+      if (end_view_dt.value == "")
+        {
+            end = "0";
+        } else {
+            end = end_view_dt.value;
+        }
+            window.location.href = "/book_engineer/{{ res_login }}/"+start+"/"+end;
+    }
+}
+
+var interval_button = document.getElementById("interval_button"); 
+interval_button.addEventListener("click", redirectToBooking);
+
+function validateBookForm()
+{
+start_date = new Date(start_dt.value)
+end_date = new Date(end_dt.value)
+
+if(start_date > end_date)
+  { 
+    alert("Введенная дата окончания наступает раньше даты начала");
+    event.preventDefault();
+    return false;
+  }
+  return true;
+}
+
+function modifyPercLabel(){
+    if (hours_radio.checked == true){
+	perc_hours.style.visibility = "hidden";
+	start_dt.type = "datetime-local";
+	end_dt.type = "datetime-local";
+	perc_input.value = "";
+	perc_input.required = false;
+    	no_reap_radio.checked = true;
+	reap_daily.checked = false;
+    };
+    if (perc_radio.checked == true){
+	perc_hours.required = true;
+	perc_hours.style.visibility = "visible";
+	start_dt.type = "date";
+	end_dt.type = "date";
+	perc_input.value = "";
+	perc_input.required = true;
+	no_reap_radio.checked = false;
+	reap_daily.checked = true;
+    };
+};
+
+hours_radio.addEventListener("change", modifyPercLabel);
+perc_radio.addEventListener("change", modifyPercLabel);
+</script>
+
+</div>
+{% endblock %}

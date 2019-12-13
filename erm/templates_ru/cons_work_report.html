@@ -1,0 +1,51 @@
+{% extends "search.html" %}
+{% block body %}
+
+
+<table class="fullname_label"><tr><th><span class="title"><h3 class="title">Консолидированный отчет по трудозатратам</h3></span></th></tr></table>
+    <div class="result_list">
+	<div style="margin:10px">
+	 
+	{% if utils_dict %}
+	<br>
+	<table class="cons_util">
+		<tr class="cons_util">	
+			<th class="cons_util" name="sla">Заказчик/договор</th>
+			{% for eng in engineers %}
+			<th class="cons_util" name="{{eng[0]}}"><a href="../../work_report/{{month}}/{{year}}/{{eng[1]}}">
+					{% autoescape false %}
+					{{ eng[0] | replace(' ', ' <br>') }} 
+					{% endautoescape %}
+				</a> </th>
+			{% endfor %}
+			<!--<th class="cons_util" name="overall">
+				ИТОГО <br> по заказчику/договору
+			</th>-->
+		</tr>
+		{% for sla in companies_sla %}
+		<tr class="cons_util">
+			<td class="cons_util" headers="sla">{{sla[0]}} <b>{{sla[1]}}</b></td>
+			{% set overall = 0 %}
+			{% for eng in engineers %}
+			<td class="cons_util_cells" headers="{{eng[0]}}">
+				{{ utils_dict[eng[0] + ' ' +  eng[1] + ' ' + sla[0] + ' ' + sla[1]] }}
+				{% if eng[0] + ' ' +  eng[1] + ' ' + sla[0] + ' ' + sla[1] in utils_dict %}
+				{% set overall = utils_dict[eng[0] + ' ' + eng[1] + ' ' + sla[0] + ' ' + sla[1]] %} 
+				{% endif %}
+			</td>
+			{% endfor %}
+			<!--<td class="cons_util" headers="overall">{{overall}}</td>
+		</tr> -->
+		{% endfor %}
+	</table>
+	<br>
+	<b>Отчет не сдали:</b> {% for no_rep_eng in no_rep_list %}
+	{{ no_rep_eng + ' ' }}
+	{% endfor %}
+	{% endif %}
+	<br>
+	<br>
+	<a href = "{{excel_file_path}}">Отчет в формате MS Excel</a>
+	</div>
+    </div>
+{% endblock %}

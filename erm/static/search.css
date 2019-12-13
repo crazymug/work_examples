@@ -1,0 +1,289 @@
+body {
+	font-family: 'Montserrat', sans-serif;
+}
+
+form.search {
+    float: center;
+}
+
+form.search input[type=text] {
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: left;
+    width: 100%;
+}
+
+form.search button {
+    float: left;
+    width: 100%;
+    padding: 10px;
+    background: #009688;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+}
+
+form.search button:hover {
+    background: #00796B;
+}
+
+form.search::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+div.result_list {
+	border: solid;
+	border-radius: 0px;
+	border-width: 5px;
+	border-color: #B2DFDB;
+	margin: 10px;
+	padding: 10px;
+	margin-top: 0px;
+	margin-bottom: 10px;
+	overflow: auto;
+}
+
+button.book {
+    width: 10%;
+    margin:10px;
+    padding: 10px;
+    background: #009688;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+}
+
+button.book:hover {
+    background: #00796B;
+}
+
+button.cancel {
+    width: 10%;
+    margin:10px;
+    padding: 10px;
+    background: #B2DFDB;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+}
+
+button.delete_eng {
+    width: 50px;
+    background: #009688;
+    margin:3px;
+    padding: 3px;
+    color: white;
+    font-size: 14px;
+    border: 1px solid grey;
+}
+
+button.delete_eng:hover {
+    background: #bb002f;
+}
+
+button.cancel:hover {
+    background: #bb002f;
+}
+
+
+span.tag {
+	background: #03A9F4;
+	padding: 3px;
+	border-radius: 0px;
+    color: white;
+}
+
+table.resource th {
+	text-align: left;
+	padding: 5px;
+}
+
+span.title {
+    font-family: 'Roboto', sans-serif;
+    color: #000000;
+}
+
+button.add {
+    width: 10%;
+    margin:10px;
+    padding: 10px;
+    background: #FF5733;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+}
+
+button.add:hover {
+    background: #FF0000;
+}
+
+table.fullname_label {
+    background-color: #B2DFDB;
+    margin: 10px;
+    margin-bottom: 0px;
+    padding: 10px;
+}
+
+h3.title {
+    margin: 0px;
+    padding: 0px;
+}
+
+button.search {
+    width: 10%;
+    margin:10px;
+    padding: 10px;
+    background: #009688;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+}
+
+button.search:hover {
+    background: #00796B;
+}
+
+button.add_eng {
+    margin-left: 10px;
+    padding: 10px;
+    background: #009688;
+    color: white;
+    font-size: 14px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+}
+
+button.add_eng:hover {
+    background: #bb002f;
+}
+
+ul.flashed {
+}
+
+li.error {
+    margin: 10px;
+    padding: 10px;
+    background: #f98f8f;
+    list-style: none;
+}
+
+li.info {
+    margin: 10px;
+    padding: 10px;
+    background: #90CAF9;
+    list-style: none;
+}
+
+td.cons_util_cells {
+    padding: 10px;
+    text-align: center;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+table.cons_util, th.cons_util, td.cons_util {
+    margin: 10px;
+    padding: 10px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+table.report, th.report, td.report_not_edited, td.report, td.report_ {
+    margin: 10px;
+    padding: 10px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+table.hist_tasks, th.hist_tasks, td.hist_tasks {
+    margin: 10px;
+    padding: 10px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+input.sla {
+    border: none;
+}
+
+td.report_new{
+    background: #f98f8f;
+    margin: 10px;
+    padding: 10px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+td.report_edited{
+    background: #ffff66;
+    margin: 10px;
+    padding: 10px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+form.login {
+    float: center;
+}
+
+form.login input[type=text] {
+    padding: 5px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: center
+}
+
+form.login input[type=password] {
+    padding: 5px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: center
+}
+
+form.login button {
+    float: center;
+    width: 50%;
+    padding: 10px;
+    background: #009688;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+}
+
+form.login button:hover {
+    background: #00796B;
+}
+
+table.users, th.users, td.users {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+button.add_user{
+    padding: 10px;
+    background: #009688;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+}
+
+button.add_user:hover {
+    background: #00796B;
+}
+
+div.vis-item {
+    background-color: #90CAF9;
+}

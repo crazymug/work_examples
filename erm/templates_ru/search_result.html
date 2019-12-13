@@ -1,0 +1,92 @@
+{% extends "search.html" %}
+
+
+{% block body %}
+    {% for resource in result %}
+
+<table class="fullname_label"><tr class="fullname_header" id="{{ resource[12]}}"><th><span class="title"><h3 class="title"> {{ resource[1] }} </h3></span></th><th>  </th>
+	    {% if resource[6] == 'head of unit' %} 
+	    <th bgcolor=#FFF380>руководитель</th>
+	    <th></th>
+	    {% endif %}
+	    <th bgcolor=#FFFFFF>&nbsp{{ res_wl[resource[12]] }} %&nbsp</th>  
+            {% if resource[11] == 'yes' %}
+            <th bgcolor=#FFFFFF>&nbsp<i class="far fa-clock">&nbsp</i></th>
+            {% endif %}
+	    <th><button type="submit" class="delete_eng" id="del{{ resource[12] }}"><i class="fas fa-trash-alt"></i></button></th>
+	    <th><button type="submit" class="delete_eng" id="edit{{ resource[12] }}"><i class="fas fa-edit"></i></button></th>
+	</tr>
+    </table>
+    <div class="result_list">
+	<div style="margin:10px">
+	      <input type="hidden" name="res_login" value="{{ resource[12] }}" size=0>
+	      <div class="text_info" id="{{ resource[12] }}" style="display: none;">
+	      <table class="resource">
+		<tr><th>Должность</th><th> 
+		    {% if resource[6] != 'head of unit' %}
+			{{ resource[6] }} 
+		    {% else %}
+			руководитель
+		    {% endif %}
+		    </th></tr>
+		<tr><th>Подразделение</th><th> {{ resource[5] }} </th></tr>
+		<tr><th>Навыки и опыт</th><th>{% autoescape false %} {{ resource[4] | replace('\n', '<br>') }} {% endautoescape %}</th></tr>
+		{% if resource[13] != '' %}
+			<tr><th>Знание иностранных языков</th><th> {{ resource[13] }}</th></tr>
+		{% endif %}
+		<tr><th>E-mail</th><th> {{ resource[7] }} </th></tr>
+		<tr><th>Телефон</th><th> {{ resource[2] }} </th></tr>
+              </table>
+	      </div>
+	      <br>
+	    {% set tags = resource[3].split(' ') %}
+	    {%for tag in tags%}
+	    <span class="tag">{{ tag }}</span> 
+	    {% endfor %}
+	    <br>
+	    </div>
+	    <button class="book" id="book{{ resource[12]}}" action="book_engineer"><i class="far fa-calendar-alt"></i></button>
+    </div>
+<script type="text/javascript">
+	var edit_eng = document.getElementById("edit{{ resource[12] }}"); 
+edit_eng.addEventListener("click", function(){window.location.href = "/edit_engineer/{{ resource[12]}}" }); 
+var del_eng = document.getElementById("del{{ resource[12] }}"); 
+del_eng.addEventListener("click", function(){window.location.href = "/delete_engineer/{{ resource[12]}}" }); 
+
+var book_eng = document.getElementById("book{{ resource[12] }}"); 
+book_eng.addEventListener("click", function(){window.location.href = "/book_engineer/{{ resource[12]}}/0/0" }); 
+
+</script>
+
+
+
+    {% endfor %}
+
+    {% if not result %}
+	<br>
+	<div align="center">К сожалению никого не удалось найти</div>
+    {% endif %}
+    
+<script type="text/javascript">
+var headers_array = document.getElementsByClassName("fullname_header");
+var div_array = document.getElementsByClassName("text_info");
+
+[].forEach.call(headers_array, function(header) {
+    header.addEventListener("click", function(){
+	if (div_array.namedItem(header.id).style.display === "none"){
+	    div_array.namedItem(header.id).style.display = "block";
+	} else {
+	    div_array.namedItem(header.id).style.display = "none";
+	};
+    })
+});
+
+var tags_array = document.getElementsByClassName("tag");
+
+[].forEach.call(tags_array, function(tag) {
+    tag.addEventListener("click", function(){
+  window.location.href = '/search_result?search_string=' +tag.textContent;	
+    })});
+</script>
+
+{% endblock %}

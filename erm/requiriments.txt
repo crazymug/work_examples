@@ -1,0 +1,6 @@
+Flask
+flask_httpauth
+flask_login
+zeep
+psycopg2
+requests_ntlm

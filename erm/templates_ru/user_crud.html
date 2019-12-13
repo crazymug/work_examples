@@ -1,0 +1,75 @@
+{% extends "search.html" %}
+
+{% block body %}
+
+
+<table class="fullname_label"><tr><th><span class="title"><h3 class="title">Пользователи</h3></span></th></tr></table>
+<div class="result_list">
+<table class="users">
+    <tr>
+        <th class="users">ФИО</th>
+        <th class="users">Логин</th>
+        <th class="users">Пароль</th>
+        <th class="users">Статус</th>
+        <th class="users">Последняя активность</th>
+        <th class="users">Изменен</th>
+        <th class="users">Создан</th>
+        <th class="users">Группа пользователей</th>
+        <th class="users">Номер для СМС оповещений</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td class="users"><textarea name="name_{{ user['login'] }}" size=30>{{ user['name'] }} </textarea></td>
+        <td class="users">{{ user['login'] }}</td>
+        <td class="users"><button id="change_pswd_{{ user['login'] }}">сменить пароль</button></td>
+        <td class="users">
+                <select name="status">
+                    <option value=1 {% if user['active'] == 1 %}selected{% endif %}>активный</option>
+                    <option value=0 {% if user['active'] == 0 %}selected{% endif %}>архивный</option>
+                </select>
+        </td>
+        <td class="users">{{ user['last_logged_in'] }}</td>
+        <td class="users">{{ user['modified'] }}</td>
+        <td class="users">{{ user['created'] }}</td>
+        <td class="users">
+            <select name="user_group">
+                <option value="engineer" {% if user['user_group'] == 'engineer' %}selected{% endif %}>Инженер</option>
+                <option value="focus-manager" {% if user['user_group'] == 'focus-manager' %}selected{% endif %}>Фокус-менеджер</option>
+                <option value="manager" {% if user['user_group'] == 'manager' %}selected{% endif %}>Руководитель</option>
+                <option value="admin" {% if user['user_group'] == 'admin' %}selected{% endif %}>Администратор</option>
+                <option value="super-admin" {% if user['user_group'] == 'super-admin' %}selected{% endif %}>Разработчик</option>
+            </select>
+        </td>
+        <td class="users"><input name="phone_{{ user['login'] }}" value={{ user['phone'] }} size=11></td>
+    </tr>
+
+    <script type="text/javascript">
+        change_pswd = document.getElementById("change_pswd_{{ user['login'] }}");
+        change_pswd.addEventListener("click", function(){
+                window.location = "/user_crud"});
+    </script>
+   {% endfor %}
+</table>
+<form action="user_crud" method="post">
+<table class="users">
+    <tr>
+        <td class="users"><input name="username" 
+                           value="Введите ФИО нового пользователя" size=30></td>
+        <td class="users"><input name="login" value="Логин" size=11></td>
+        <td class="users">
+            <select name="user_group">
+                <option value="engineer">Инженер</option>
+                <option value="focus-manager">Фокус-менеджер</option>
+                <option value="manager">Руководитель</option>
+                <option value="admin">Администратор</option>
+                <option value="super-admin">Разработчик</option>
+            </select>
+        </td>
+        <td class="users"><input name="phone" value="Номер для СМС" size=11></td>
+	<td><button class="add_user" type="submit">Добавить пользователя</button>
+        </td>
+    </tr>
+</table>
+</form>
+</div> 
+{% endblock %}

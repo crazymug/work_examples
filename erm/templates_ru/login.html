@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Трекер задач</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Roboto" rel="stylesheet">
+<link rel="stylesheet" href="{{url_for('static', filename='fontawesome-free-5.12.0-web/css/all.css')}}" >
+        <link rel="stylesheet" type="text/css" href= "{{url_for('static', filename='search.css')}}">
+</head>
+<body style="margin: 0px;">
+   <div align=center style="margin-top: 15%;">
+	<table width="25%">
+		<tr>
+			<th width="25%"><img src="{{url_for('static', filename = "logostep.png")}}" width=50% style="border: 0;"><br><br><br></th>
+		</tr>   
+		<tr width="50%">
+		        <th>Трекер задач<br><br></th>
+	 	</tr>
+	 </table>
+	 <form class="login" action="login" method="post">
+		 <table width="25%">
+			 <tr width="50%">
+				<th>Логин</th>
+				<th><input type="text" name="login"></th>
+			 </tr>
+			 <tr width="50%">
+				<th>Пароль</th>
+				<th><input type="password" name="pass"></th>
+			 </tr>
+			 <tr>
+				 <th></th>
+				 <th><button type="submit"><i class="fas fa-sign-in-alt"></i></th>
+			 </tr>
+		 </table>
+	 </form>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+		<ul class="flashed">
+		{% for category, message in messages %}
+		<li class="{{category}}">{{message}}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+    {% endwith %}
+</body>
+</html>
