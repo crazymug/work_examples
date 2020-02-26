@@ -1,4 +1,4 @@
-import unittest
+import time
 from datetime import datetime
 from datetime import timedelta
 import calendar
@@ -7,14 +7,12 @@ class dateutils():
     '''date and time functions usefull for processing timelines'''
     
     @staticmethod
-    def iso2unix(dt):
+    def iso2unix(dt, time_info = True):
         '''accepts UTC time, returns unix timestamp as int'''
-        try:
+        if time_info == True:
             timestamp = int((datetime.strptime(dt, "%Y-%m-%dT%H:%M") - datetime(1970,1,1)).total_seconds())
-        except ValueError:
+        elif time_info == False:
             timestamp = int((datetime.strptime(dt, "%Y-%m-%d") - datetime(1970,1,1)).total_seconds())
-        except Exception:
-            return None
         return timestamp
     
     @staticmethod
@@ -66,7 +64,8 @@ class dateutils():
 
     @staticmethod
     def convert_booking_to_entries(booking_type, percent, hours, 
-                                   repeat, start_date, end_date, company, sla):
+                                   repeat, start_date, end_date, company, sla,
+                                   project_id, resource_login):
         '''prepare booking info entries for inserting into booking db table, return list if dicts var
         start_date and end_date is datetime.datetime instances
 
@@ -98,7 +97,8 @@ class dateutils():
                                         'percent': percent, 'hours': hours, 
                                         'repeat': repeat, 'start_date': d_s, 
                                         'end_date': d_e, 'company': company, 
-                                        'sla': sla})
+                                        'sla': sla, 'project_id': project_id,
+                                        'resource_login': resource_login})
         elif repeat == 'no':
             booking_entries.append({'booking_type': booking_type, 
                                     'percent': percent, 'hours': hours, 
@@ -107,15 +107,23 @@ class dateutils():
                                                                     '%Y-%m-%dT%H:%M'),
                                     'end_date': datetime.strftime(end_date_obj, 
                                                                   '%Y-%m-%dT%H:%M'), 
-                                    'company': company, 'sla': sla})
+                                    'company': company, 'sla': sla, 'project_id': project_id,
+                                    'resource_login': resource_login})
 
         return booking_entries
 
     @staticmethod
-    def replace_tmstps(bk):
+    def replace_timestamps(bk):
         '''replaces all unix timestamps with ISO 8601 in select from booking table (from app db)'''
 
         bk_updated = list(bk)
         bk_updated[8] = dateutils.unix2iso(bk[8])
         bk_updated[9] = dateutils.unix2iso(bk[9])
         return bk_updated
+
+    @staticmethod
+    def get_last_week_time_interval():
+        ONE_WEEK_SECONDS = 604800
+        start_date = dateutils.unix2iso(int(time.time()) - ONE_WEEK_SECONDS)
+        end_date = dateutils.unix2iso(int(time.time()))
+        return start_date, end_date

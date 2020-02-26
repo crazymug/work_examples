@@ -2,70 +2,68 @@
 
 
 {% block body %}
-    {% for resource in result %}
+    {% for resource in resources %}
 
-<table class="fullname_label"><tr class="fullname_header" id="{{ resource[12]}}"><th><span class="title"><h3 class="title"> {{ resource[1] }} </h3></span></th><th>  </th>
-	    {% if resource[6] == 'head of unit' %} 
+<table class="fullname_label">
+        <tr class="fullname_header" id="{{ resource.eng_login }}">
+                <th><span class="title"><h3 class="title"> {{ resource.full_name }} </h3></span></th>
+                <th>  </th>
+	    {% if resource.type == 'head of unit' %} 
 	    <th bgcolor=#FFF380>руководитель</th>
 	    <th></th>
 	    {% endif %}
-	    <th bgcolor=#FFFFFF>&nbsp{{ res_wl[resource[12]] }} %&nbsp</th>  
-            {% if resource[11] == 'yes' %}
+	    <th bgcolor=#FFFFFF>&nbsp{{ resource.workload }} %&nbsp</th>  
+            {% if resource.utilezed == 'yes' %}
             <th bgcolor=#FFFFFF>&nbsp<i class="far fa-clock">&nbsp</i></th>
             {% endif %}
-	    <th><button type="submit" class="delete_eng" id="del{{ resource[12] }}"><i class="fas fa-trash-alt"></i></button></th>
-	    <th><button type="submit" class="delete_eng" id="edit{{ resource[12] }}"><i class="fas fa-edit"></i></button></th>
+	    <th><button type="submit" class="delete_eng" id="del{{ resource.eng_login }}"><i class="fas fa-trash-alt"></i></button></th>
+	    <th><button type="submit" class="delete_eng" id="edit{{ resource.eng_login }}"><i class="fas fa-edit"></i></button></th>
 	</tr>
-    </table>
+</table>
     <div class="result_list">
 	<div style="margin:10px">
-	      <input type="hidden" name="res_login" value="{{ resource[12] }}" size=0>
-	      <div class="text_info" id="{{ resource[12] }}" style="display: none;">
+	      <input type="hidden" name="res_login" value="{{ resource.eng_login }}" size=0>
+	      <div class="text_info" id="{{ resource.eng_login }}" style="display: none;">
 	      <table class="resource">
 		<tr><th>Должность</th><th> 
-		    {% if resource[6] != 'head of unit' %}
-			{{ resource[6] }} 
+		    {% if resource.type  != 'head of unit' %}
+			{{ resource.type }} 
 		    {% else %}
 			руководитель
 		    {% endif %}
 		    </th></tr>
-		<tr><th>Подразделение</th><th> {{ resource[5] }} </th></tr>
-		<tr><th>Навыки и опыт</th><th>{% autoescape false %} {{ resource[4] | replace('\n', '<br>') }} {% endautoescape %}</th></tr>
-		{% if resource[13] != '' %}
-			<tr><th>Знание иностранных языков</th><th> {{ resource[13] }}</th></tr>
+		<tr><th>Подразделение</th><th> {{ resource.org_unit_id }} </th></tr>
+		<tr><th>Навыки и опыт</th><th>{% autoescape false %} {{ resource.skills | replace('\n', '<br>') }} {% endautoescape %}</th></tr>
+		{% if resource.langs != '' %}
+			<tr><th>Знание иностранных языков</th><th> {{ resource.langs }}</th></tr>
 		{% endif %}
-		<tr><th>E-mail</th><th> {{ resource[7] }} </th></tr>
-		<tr><th>Телефон</th><th> {{ resource[2] }} </th></tr>
+		<tr><th>E-mail</th><th> {{ resource.e_mail }} </th></tr>
+		<tr><th>Телефон</th><th> {{ resource.phone }} </th></tr>
               </table>
 	      </div>
 	      <br>
-	    {% set tags = resource[3].split(' ') %}
+	    {% set tags = resource.tags.split(' ') %}
 	    {%for tag in tags%}
 	    <span class="tag">{{ tag }}</span> 
 	    {% endfor %}
 	    <br>
 	    </div>
-	    <button class="book" id="book{{ resource[12]}}" action="book_engineer"><i class="far fa-calendar-alt"></i></button>
+	    <button class="book" id="book{{ resource.eng_login }}" action="book_engineer"><i class="far fa-calendar-alt"></i></button>
     </div>
-<script type="text/javascript">
-	var edit_eng = document.getElementById("edit{{ resource[12] }}"); 
-edit_eng.addEventListener("click", function(){window.location.href = "/edit_engineer/{{ resource[12]}}" }); 
-var del_eng = document.getElementById("del{{ resource[12] }}"); 
-del_eng.addEventListener("click", function(){window.location.href = "/delete_engineer/{{ resource[12]}}" }); 
-
-var book_eng = document.getElementById("book{{ resource[12] }}"); 
-book_eng.addEventListener("click", function(){window.location.href = "/book_engineer/{{ resource[12]}}/0/0" }); 
-
-</script>
 
 
+        <script type="text/javascript">
+                var edit_eng = document.getElementById("edit{{ resource.eng_login }}"); 
+        edit_eng.addEventListener("click", function(){window.location.href = "/edit_engineer/{{ resource.eng_login}}" }); 
+        var del_eng = document.getElementById("del{{ resource.eng_login }}"); 
+        del_eng.addEventListener("click", function(){window.location.href = "/delete_engineer/{{ resource.eng_login }}" }); 
+
+        var book_eng = document.getElementById("book{{ resource.eng_login }}"); 
+        book_eng.addEventListener("click", function(){window.location.href = "/book_engineer/{{ resource.eng_login }}/0/0" }); 
+
+        </script>
 
     {% endfor %}
-
-    {% if not result %}
-	<br>
-	<div align="center">К сожалению никого не удалось найти</div>
-    {% endif %}
     
 <script type="text/javascript">
 var headers_array = document.getElementsByClassName("fullname_header");
@@ -85,7 +83,13 @@ var tags_array = document.getElementsByClassName("tag");
 
 [].forEach.call(tags_array, function(tag) {
     tag.addEventListener("click", function(){
-  window.location.href = '/search_result?search_string=' +tag.textContent;	
+        let form = document.createElement('form');
+        form.action = '/search_result';
+        form.method = 'POST';
+        form.innerHTML = '<input name="search_string" value="' + tag.textContent + '">';
+        form.style.display = "none";
+        document.body.append(form);
+        form.submit();
     })});
 </script>
 

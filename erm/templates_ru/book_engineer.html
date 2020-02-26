@@ -2,10 +2,11 @@
 
 
 {% block body %}   
+{% if fullname != '' %}
 <script src="{{url_for('static', filename='moment-with-locales.min.js')}}"></script>
 <script src="{{url_for('static', filename='vis.min.js')}}"></script>
 <link href="{{url_for('static', filename='vis.min.css')}}" rel="stylesheet" type="text/css" />
-    <table class="fullname_label" ><tr><th><span class="title"><h3 class="title"> {{ flname }} 
+    <table class="fullname_label" ><tr><th><span class="title"><h3 class="title"> {{ fullname }} 
 			{% if act_or_hist == 'act' %}
 			   активные задачи на неделю (7 дней) 
 			{% else %}
@@ -18,14 +19,16 @@
 		<tr><th>Дата начала</th><th><input type="date" name="diag_start_datetime" id="diag_start_datetime"></th></tr>
 		<tr><th>Дата окончания</th><th><input type="date" name="diag_end_datetime" id="diag_end_datetime"></th></tr>
 	</table>
-	<input name="res_login" value="{{ res_login }}" type=hidden>
+	<input name="res_login" value="{{ eng_login }}" type=hidden>
 	<button type="submit" class="book" id="interval_button"><i class="far fa-check-circle"></i></button>
-	<br>
-	<input id="diag_timeline_radio" type="radio" name="timeline" value="diagram" checked>Диаграмма</input>
-	<input id="table_timeline_radio" type="radio" name="timeline" value="table">Таблица</input>
-
 
 {% if bkinfo %}
+<br>
+<input id="diag_timeline_radio" type="radio" name="timeline" value="diagram" checked>Диаграмма</input>
+<input id="table_timeline_radio" type="radio" name="timeline" value="table">Таблица</input>
+
+
+
 <div id="timeline_visjs" style="margin:30px;"></div>
 <table id="table_timeline" class="hist_tasks" style="visibility:collapse;">
 		<tr>
@@ -42,21 +45,17 @@
 			<td class="hist_tasks">{{booking[10]}}</td>
 			<td class="hist_tasks">{{booking[11]}}</td>
 			<td class="hist_tasks">{{booking[6]}}</td>
-			<td class="hist_tasks">{{booking[8]}}</td>
-			<td class="hist_tasks">{{booking[9]}}</td>
+			<td class="hist_tasks">{{booking[8]|iso2unix()|unix2iso_ru()}}</td>
+			<td class="hist_tasks">{{booking[9]|iso2unix()|unix2iso_ru()}}</td>
 		</tr>
 		{% endfor %}
 	</table>
 
-{% else %}
-нет данных
 {% endif %}
 
 
 <script type="text/javascript">
 </script>
-
-
 
 <input id="res_login" type=hidden>
 
@@ -122,26 +121,26 @@ table_timeline_radio.addEventListener("change", modifyTimeline);
 
 	<form action="book_engineer" method="post" onsubmit="return validateBookForm();">
 		<div style="margin:10px"><span class="title"><h3>Поставить задачу инженеру</h3></span>
-	<table class="booking">
-	<tr><th>Проект/активность</th><th><input type="text" name="proj_id" required size="70"></th></tr>
-	<tr><th>Компания</th><th><input type="text" name="company" required size="30"></th></tr>
-	<tr><th>Договор</th><th><input type="text" name="sla" required size="30"></th></tr>
-	<tr><th>Тип задачи</th><th><form name="book_type">
-		    <input type="radio" name="type" id="hours_radio" value="hours" checked>конкретные часы
-		<input type="radio" name="type" id="perc_radio" value="percent" name="radio_perc">процент от рабочего времени</form><br></th></tr>
-	<tr id="perc_hours" style="visibility: hidden;"><th>Проценты</th><th><input type="number" id="perc" min=0 name="perchours"></th></tr>
-	<tr><th>Повторяемость события</th><th>
-		<input id = "reap_daily" type="radio" name="repeat" value="daily">ежедневно 
-		<input type="radio" name="repeat" value="weekly">еженедельно 
-		<input type="radio" name="repeat" value="monthly">ежемесячно 
-		<input id = "no_reap" type="radio" name="repeat" value="no" checked>нет 
-	</th></tr>
-	<tr><th>Дата/время начала</th><th><input type="datetime-local" name="start_datetime" id="start_dt" required></th></tr>
-	<tr><th>Дата/время окончания</th><th><input type="datetime-local" name="end_datetime" id="end_dt" required></th></tr>
-	</table><br>
-	</div>
-	<input name="res_login" value="{{ res_login }}" type=hidden>
-	<button type="submit" class="book"><i class="far fa-calendar-plus"></i></button>
+                <table class="booking">
+                <tr><th>Проект/активность</th><th><input type="text" name="proj_id" required size="70"></th></tr>
+                <tr><th>Компания</th><th><input type="text" name="company" required size="30"></th></tr>
+                <tr><th>Договор</th><th><input type="text" name="sla" required size="30"></th></tr>
+                <tr><th>Тип задачи</th><th><form name="book_type">
+                            <input type="radio" name="type" id="hours_radio" value="hours" checked>конкретные часы
+                        <input type="radio" name="type" id="perc_radio" value="percent" name="radio_perc">процент от рабочего времени</form><br></th></tr>
+                <tr id="perc_hours" style="visibility: hidden;"><th>Проценты</th><th><input type="number" id="perc" min=0 name="perchours"></th></tr>
+                <tr><th>Повторяемость события</th><th>
+                        <input id = "reap_daily" type="radio" name="repeat" value="daily">ежедневно 
+                        <input type="radio" name="repeat" value="weekly">еженедельно 
+                        <input type="radio" name="repeat" value="monthly">ежемесячно 
+                        <input id = "no_reap" type="radio" name="repeat" value="no" checked>нет 
+                </th></tr>
+                <tr><th>Дата/время начала</th><th><input type="datetime-local" name="start_datetime" id="start_dt" required></th></tr>
+                <tr><th>Дата/время окончания</th><th><input type="datetime-local" name="end_datetime" id="end_dt" required></th></tr>
+                </table><br>
+                </div>
+                <input name="res_login" value="{{ eng_login }}" type=hidden>
+                <button type="submit" class="book"><i class="far fa-calendar-plus"></i></button>
 	</form>
 
 <script type="text/javascript">
@@ -182,16 +181,16 @@ if(validResult == true)
         {
             start = "0";
         } else {
-            start = start_view_dt.value;
+            start = start_view_dt.value+"T00:00";
         }
 
       if (end_view_dt.value == "")
         {
             end = "0";
         } else {
-            end = end_view_dt.value;
+            end = end_view_dt.value+"T23:59";
         }
-            window.location.href = "/book_engineer/{{ res_login }}/"+start+"/"+end;
+            window.location.href = "/book_engineer/{{ eng_login }}/"+start+"/"+end;
     }
 }
 
@@ -239,4 +238,5 @@ perc_radio.addEventListener("change", modifyPercLabel);
 </script>
 
 </div>
+{% endif %}
 {% endblock %}

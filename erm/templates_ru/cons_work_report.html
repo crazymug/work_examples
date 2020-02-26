@@ -1,12 +1,11 @@
 {% extends "search.html" %}
 {% block body %}
 
-
+{% if utils_dict %}
 <table class="fullname_label"><tr><th><span class="title"><h3 class="title">Консолидированный отчет по трудозатратам</h3></span></th></tr></table>
     <div class="result_list">
 	<div style="margin:10px">
 	 
-	{% if utils_dict %}
 	<br>
 	<table class="cons_util">
 		<tr class="cons_util">	
@@ -42,10 +41,10 @@
 	<b>Отчет не сдали:</b> {% for no_rep_eng in no_rep_list %}
 	{{ no_rep_eng + ' ' }}
 	{% endfor %}
-	{% endif %}
 	<br>
 	<br>
 	<a href = "{{excel_file_path}}">Отчет в формате MS Excel</a>
 	</div>
     </div>
+{% endif %}
 {% endblock %}

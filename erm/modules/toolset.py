@@ -16,7 +16,11 @@ class Toolset():
             current_month = date.today().month
             current_year = date.today().year
         elif date.today().day < 15:
-            current_month = date.today().month - 1
+            if date.today().month != 1:
+                current_month = date.today().month - 1
+            else:
+                current_month = 12 
+
             prev_month_date = date.today() - timedelta(days = 30)
 
             if date.today().year != prev_month_date.year:

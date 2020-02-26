@@ -1,5 +1,9 @@
-from suir.modules.dateutils import dateutils
 from datetime import datetime
+
+import pytest
+import unittest.mock as mock
+
+from suir.modules.dateutils import dateutils
 
 
 def test_daterange_daily():
@@ -41,19 +45,24 @@ def test_daterange_monthly():
 def test_iso2unix():
     assert dateutils.iso2unix('2018-10-12T10:00') == 1539338400
 
+def test_iso2unix_notime():
+    assert dateutils.iso2unix('2018-10-12', time_info=False) == 1539302400
+
+
 def test_unix2iso():
     assert dateutils.unix2iso('1539338400') == '2018-10-12T10:00'
+
+def test_unix2iso_notime():
+    assert dateutils.unix2iso('1539338400', 
+                              time_info=False) == '2018-10-12'
+
 
 def test_unix2iso_ru():
     assert dateutils.unix2iso_ru('1539338400') == '12.10.2018 10:00'
 
-def test_unix2iso_notime():
-    assert dateutils.unix2iso('1539338400', 
-                              time_info = False) == '2018-10-12'
-
 def test_unix2iso_ru_notime():
     assert dateutils.unix2iso_ru('1539338400',
-                                 time_info = False) == '12.10.2018'
+                                 time_info=False) == '12.10.2018'
 
 
 def test_convert_booking_to_entries_percents():
@@ -61,14 +70,16 @@ def test_convert_booking_to_entries_percents():
                                         '2018-10-10', 
                                         '2018-10-12', 
                                         'Company1', 
-                                        'SLA1') == [{'booking_type': 'perc',
+                                        'SLA1', 'Задача 1', 't_testov') == [{'booking_type': 'perc',
            'company': 'Company1',
            'end_date': '2018-10-10T17:00',
            'hours': 6,
            'percent': 80,
            'repeat': 'daily',
            'sla': 'SLA1',
-           'start_date': '2018-10-10T10:00'},
+           'start_date': '2018-10-10T10:00',
+           'project_id': 'Задача 1',
+           'resource_login': 't_testov'},
           {'booking_type': 'perc',
            'company': 'Company1',
            'end_date': '2018-10-11T17:00',
@@ -76,7 +87,9 @@ def test_convert_booking_to_entries_percents():
            'percent': 80,
            'repeat': 'daily',
            'sla': 'SLA1',
-           'start_date': '2018-10-11T10:00'},
+           'start_date': '2018-10-11T10:00',
+           'project_id': 'Задача 1',
+           'resource_login': 't_testov'},
           {'booking_type': 'perc',
            'company': 'Company1',
            'end_date': '2018-10-12T17:00',
@@ -84,7 +97,9 @@ def test_convert_booking_to_entries_percents():
             'percent': 80,
             'repeat': 'daily',
            'sla': 'SLA1',
-            'start_date': '2018-10-12T10:00'}]
+            'start_date': '2018-10-12T10:00',
+           'project_id': 'Задача 1',
+           'resource_login': 't_testov'}]
 
     
 def test_convert_booking_to_entries():
@@ -92,45 +107,63 @@ def test_convert_booking_to_entries():
                                         '2018-10-10T10:00', 
                                         '2018-10-12T16:00', 
                                         'Company1', 
-                                        'SLA1') == [{'booking_type': 'hours', 
+                                        'SLA1', 'Задача 1', 't_testov') == [{'booking_type': 'hours', 
                                                      'percent': '', 'hours': 6, 
                                                      'repeat': 'daily', 
                                                      'start_date': '2018-10-10T10:00', 
                                                      'end_date': '2018-10-10T16:00', 
                                                      'company': 'Company1', 
-                                                     'sla': 'SLA1'},
-                                                    {'booking_type': 'hours', 
+                                                     'sla': 'SLA1',
+                                                     'project_id': 'Задача 1',
+                                                     'resource_login': 't_testov'},
+                                                    
+                                                     {'booking_type': 'hours', 
                                                      'percent': '', 'hours': 6, 
                                                      'repeat': 'daily',
                                                      'start_date': '2018-10-11T10:00', 
                                                      'end_date': '2018-10-11T16:00', 
                                                      'company': 'Company1', 
-                                                     'sla': 'SLA1'},
+                                                     'sla': 'SLA1',
+                                                     'project_id': 'Задача 1',
+                                                     'resource_login': 't_testov'},
+
                                                     {'booking_type': 'hours', 
                                                      'percent': '', 'hours': 6, 
                                                      'repeat': 'daily',
                                                      'start_date': '2018-10-12T10:00', 
                                                      'end_date': '2018-10-12T16:00', 
                                                      'company': 'Company1', 
-                                                     'sla': 'SLA1'}]
+                                                     'sla': 'SLA1',
+                                                     'project_id': 'Задача 1',
+                                                     'resource_login': 't_testov'}]
 
 def test_convert_booking_to_entries_norepeat():
     assert dateutils.convert_booking_to_entries('hours', '', 6, 'no', 
                                                 '2018-10-10T10:00', 
                                                 '2018-10-12T16:00',
                                                 'Company1', 
-                                                'SLA1') == [{'booking_type': 'hours', 
+                                                'SLA1', 'Задача 1', 
+                                                't_testov') == [{'booking_type': 'hours', 
                                                              'percent': '', 
                                                              'hours': 6, 
                                                              'repeat': 'no',
                                                              'start_date': '2018-10-10T10:00', 
                                                              'end_date': '2018-10-12T16:00',
                                                              'company': 'Company1', 
-                                                             'sla': 'SLA1'}]
+                                                             'sla': 'SLA1',
+                                                             'project_id': 'Задача 1',
+                                                             'resource_login': 't_testov'}]
 
 def test_replace_tmstps():
     bkinfo = (1, 'hours', 20, '20', 1, 5, 'проект 11', None, 
               1539770940, 1540065600)
     res_bk = (1, 'hours', 20, '20', 1, 5, 'проект 11', None, 
               '2018-10-17T10:09', '2018-10-20T20:00')
-    assert dateutils.replace_tmstps(bkinfo) == list(res_bk)
+    assert dateutils.replace_timestamps(bkinfo) == list(res_bk)
+
+@mock.patch('suir.modules.dateutils.time.time')
+def test_get_last_week_time_interval(time):
+    time.return_value = 1582198723
+    start_date = '2020-02-13T11:38'
+    end_date = '2020-02-20T11:38'
+    assert dateutils.get_last_week_time_interval() == (start_date, end_date)

@@ -3,6 +3,8 @@ import http
 import json
 
 from .toolset import Toolset
+from .backend import backend
+
 
 class User():
     def __init__(self, login, pswd):
@@ -12,14 +14,7 @@ class User():
     @property
     def is_authenticated(self):
         '''compare pswd hash from db with pswd hash from request'''
-        conn = http.client.HTTPConnection('127.0.0.1', 8000)
-        conn.request('GET', '/rest/check_credentials/{0}/{1}'.format(self.login,
-                                                                    self.pswd))
-        answ = conn.getresponse()
-     
-        #pswd_list[0] -> password hash, pswd_list[1] -> password salt
-        is_auth = json.loads(answ.read())
-
+        is_auth = backend.check_credentials(self.login, self.pswd)
         if is_auth == True:
             self.toolset_actions = Toolset(self.user_group, 
                                            self.fullname, self.login).actions
@@ -38,18 +33,13 @@ class User():
 
     @property
     def fullname(self):
-        conn = http.client.HTTPConnection('127.0.0.1', 8000)
-        conn.request('GET', '/rest/get_fullname/{0}'.format(self.login))
-        answ = conn.getresponse()
-        fullname = json.loads(answ.read())
+        user_info = backend.get_user(self.login)
+        fullname = user_info['name']
         return fullname
 
     @property
     def user_group(self):
-        conn = http.client.HTTPConnection('127.0.0.1', 8000)
-        conn.request('GET', '/rest/get_user_group/{0}'.format(self.login))
-        answ = conn.getresponse()
-        user_group = json.loads(answ.read())
+        user_group = backend.get_user_group(self.login)
         return user_group 
 
     def get_id(self):

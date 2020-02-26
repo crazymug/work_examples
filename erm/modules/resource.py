@@ -1,34 +1,37 @@
+import unittest
 import time
 
-from .ersmm import ersmm
+from .backend import backend
 
 class resource():
-    '''class represents resources(engineers) and their available func and fields'''
+    '''class represents resource(engineer) and their available func and fields'''
 
     def __init__(self, eng_login):
         self.eng_login = eng_login
-        self.booking = self.__get_booking(eng_login)
-        self.cur_week_booking = self.__get_cur_week_booking(self.booking)
+        self.cur_week_booking = backend.get_eng_booking_week(eng_login)  
         self.workload = self.__calc_workload(self.cur_week_booking)
-        self.phone = self.__get_phone_number(eng_login)
+        self.__set_info()
 
-    def __get_booking(self, eng_login):
-        '''get all booking info for specific engineer's id'''
-        bking = ersmm.get_eng_booking_info(eng_login, None)
-        return bking
-    
-    def __is_in_week_daterange(self, bk):
-        '''NEED TO MOVE TO dateutils.py'''
-        '''checks if booking entry in current week dateframe'''
-        return not set(range(int(time.time()/60), 
-                             int(time.time()/60) + 7*24*60)).isdisjoint(range(
-                                                                              int(bk[7]/60), int(bk[8]/60)))
-    
-    def __get_cur_week_booking(self, booking):
-        '''get current week booking info from given booking info'''
-        #week_booking = ersmm.get_eng_booking_week(eng_login)
-        week_booking = list(filter(self.__is_in_week_daterange, booking)) 
-        return week_booking
+    def __lt__(self, other):
+        return self.workload < other.workload
+
+    def __set_info(self):
+        eng_info = backend.get_eng_info(self.eng_login)
+        if len(eng_info) != 0:
+            self.full_name = eng_info[0][1]
+            self.phone = eng_info[0][2]
+            self.tags = eng_info[0][3]
+            self.skills = eng_info[0][4]
+            self.org_unit_id = eng_info[0][5]
+            self.type = eng_info[0][6]
+            self.e_mail = eng_info[0][7]
+            self.rem_id = eng_info[0][8]
+            self.jira_id = eng_info[0][9]
+            self.sharepoint_id = eng_info[0][10]
+            self.utilized = eng_info[0][11]
+            self.langs = eng_info[0][13]
+        else:
+            self.full_name = ''
 
     def __trunc_dateframes(self, cur_week_booking):
         '''NEED TO MOVE TO dateutils.py'''
@@ -37,12 +40,12 @@ class resource():
         cur_time = int(time.time())
 
         for dateframe in cur_week_booking:
-            if dateframe[7] < cur_time: 
+            if dateframe[8] < cur_time: 
                 res_timeline.append((cur_time, dateframe[8]))
-            elif dateframe[8] > (cur_time + 7*24*60*60): 
-                res_timeline.append((dateframe[7], cur_time + 7*24*60*60))
+            elif dateframe[9] > (cur_time + 7*24*60*60): 
+                res_timeline.append((dateframe[8], cur_time + 7*24*60*60))
             else: 
-                res_timeline.append((dateframe[7], dateframe[8]))
+                res_timeline.append((dateframe[8], dateframe[9]))
         return res_timeline
 
     def __calc_workload(self, cur_week_booking):
@@ -70,8 +73,30 @@ class resource():
         if busy_timeline > (7*24*60): busy_timeline = 7*24*60
 
         workload = int((busy_timeline / (7*24*60)) * 100)
-        return workload 
+        return workload
 
-    def __get_phone_number(self, eng_login):
-        eng_info = ersmm.get_eng_info(eng_login)
-        return eng_info[0][2]
+    @staticmethod
+    def get_resources_sorted_by_workload(logins):
+        resources = []
+        for login in logins:
+            resources.append(resource(login[0]))
+        resources_sorted_by_workload = sorted(resources)
+        return resources_sorted_by_workload
+
+    @staticmethod
+    def get_engineer_info_from_request(request):
+        engineer = {}
+        engineer['fullname'] = request.form['fullname']
+        engineer['phone'] = request.form['phone']
+        engineer['tags'] = request.form['tags']
+        engineer['skills'] = request.form['skills']
+        engineer['org_unit'] = request.form['org_unit']
+        engineer['eng_type'] = request.form['type']
+        engineer['email'] = request.form['email']
+        engineer['rem_id'] = request.form['rem_id']
+        engineer['jira_id'] = request.form['jira_id']
+        engineer['suir_id'] = request.form['suir_id']
+        engineer['util'] = request.form['util']
+        engineer['langs'] = request.form['langs']
+        engineer['sharepoint_id'] = request.form['sharepoint_id']
+        return engineer 

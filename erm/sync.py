@@ -1,5 +1,5 @@
-from modules.ersmm import ersmm
-from modules.integration import Remedy, Jira, Sharepoint
+from modules.backend import backend
+from modules.integration import Remedy_HPD, Remedy_CHG, Jira, Sharepoint
 import configparser
 import sys
 
@@ -15,28 +15,33 @@ except (IndexError, configparser.ParsingError):
         This will make sync run every half an hour.''')
 else:
 
-    sysTypes = {'Remedy': Remedy, 'JIRA': Jira, 'Sharepoint': Sharepoint}
+    sysTypes = {'Remedy_HPD': Remedy_HPD, 'Remedy_CHG': Remedy_CHG, 
+                'JIRA': Jira, 'Sharepoint': Sharepoint}
 
     for system in config.sections():
         if system != 'General':
             url = config[system]['URL']
             user = config[system]['User']
             pswd = config[system]['Password']
-            r = sysTypes[config[system]['Type']](url, user, pswd)
+            external_system = sysTypes[config[system]['Type']](url, user, pswd)
 
-            print('Synchronizing with {0}...'.format(system))
-            client, header = r.connect()
+            print('\nSynchronizing with {0}...'.format(system))
+            external_system.connect()
             entriesList = []
-            for eng in ersmm.get_engineers_list():
-                if system == 'Remedy' and eng[8] != None: 
-                    entry = r.getEntry(client, header, eng)
-                    if entry != None: entriesList = entriesList + entry
-                if system == 'Jira' and eng[9] != '' and eng[9] != None: 
-                    entries = r.getEntries(eng)
-                    if entries != None: entriesList = entriesList + entries
-                if system == 'Sharepoint' and eng[10] != '' and eng[10] != None: 
-                    entries = r.getEntries(eng)
-                    if entries != None: entriesList = entriesList + entries
-            prepEntries = r.preprocessEntries(entriesList)
-            print(prepEntries)
-            r.updateBooking(prepEntries)
+            for engineer in backend.get_engineers_list():
+                entries = []
+                if system == 'Remedy_HPD' and engineer[8] != None: 
+                    entries = external_system.get_entries(engineer)
+                elif system == 'Remedy_CHG' and engineer[8] != None: 
+                    entries = external_system.get_entries(engineer)
+                elif system == 'Jira' and engineer[9] != '' and engineer[9] != None: 
+                    entries = external_system.get_entries(engineer)
+                elif system == 'Sharepoint' and engineer[10] != '' and engineer[10] != None: 
+                    entries = external_system.get_entries(engineer)
+
+                if entries != []: 
+                    entriesList = entriesList + entries
+
+            preprocessed_entries = external_system.preprocess_entries(entriesList)
+            print(preprocessed_entries)
+            external_system.send_booking_to_backend(preprocessed_entries)

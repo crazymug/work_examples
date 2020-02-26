@@ -20,7 +20,7 @@
 		<tr><th>Login в BMC Remedy</th><th><input type="text" name="rem_id" {% if eng_inf %} value="{{ eng_inf[8] }}" {% endif %}></th></tr>
 		<tr><th>Login в JIRA</th><th><input type="text" name="jira_id" {% if eng_inf %} value="{{ eng_inf[9] }}" {% endif %}></th></tr>
 		<tr><th>ФИО в WFS</th><th><input type="text" name="sharepoint_id" {% if eng_inf %} value="{{ eng_inf[10] }}" {% endif %}></th></tr>
-		<tr><th>Login в Трекере задач</th><th><input type="text" name="suir_id" required {% if eng_inf %} value="{{ eng_inf[12] }}" {% endif %}></th></tr>
+		<tr><th>Login в Трекере рабочего времени</th><th><input type="text" name="suir_id" required {% if eng_inf %} value="{{ eng_inf[12] }}" {% endif %}></th></tr>
 		<tr><th>Утилизируемый ресурс</th><th>
 				 <select name="util">
                 <option value="yes" {% if eng_inf %} {% if eng_inf[11] == 'yes' %}selected{% endif %}{% endif %}>Да</option>

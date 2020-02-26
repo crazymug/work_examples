@@ -1,6 +1,6 @@
 {% extends "search.html" %}
 {% block body %}
-
+{% if tasks %}
 <table class="fullname_label"><tr><th><span class="title"><h3 class="title">Ежемесячный отчет по трудозатратам (<a href="/book_engineer/{{eng_login}}/0/0">{{username}}</a>, за {{month}}.{{year}})</h3></span></th></tr></table>
     <div class="result_list">
 	<div style="margin:10px">
@@ -111,4 +111,5 @@ window.onload = recalcOverallUtil;
 		};
 	};
 </script>
+{% endif %}
 {% endblock %}
